@@ -382,51 +382,63 @@
         .replace(/\s+/g, ' ')    // Normaliza espaços
         .trim());                 // Remove espaços no início e fim
       
-      // Divide as frases em palavras
-      const palavrasOriginais = originalNormalizado.split(' ');
-      const palavrasTranscritas = transcritaNormalizada.split(' ');
-      
       const resultado = [];
       let i = 0, j = 0;
       
-      while (i < palavrasOriginais.length || j < palavrasTranscritas.length) {
-        if (i < palavrasOriginais.length && j < palavrasTranscritas.length) {
-          const palavraOriginal = palavrasOriginais[i];
-          const palavraTranscrita = palavrasTranscritas[j];
+      // Divide as frases em caracteres
+      const caracteresOriginais = originalNormalizado.split('');
+      const caracteresTranscritos = transcritaNormalizada.split('');
+      
+      while (i < caracteresOriginais.length || j < caracteresTranscritos.length) {
+        if (i < caracteresOriginais.length && j < caracteresTranscritos.length) {
+          const caractereOriginal = caracteresOriginais[i];
+          const caractereTranscrito = caracteresTranscritos[j];
           
-          // Compara as palavras
-          if (palavraOriginal === palavraTranscrita) {
-            // Palavra correta
+          // Se for espaço, pula
+          if (caractereOriginal === ' ' && caractereTranscrito === ' ') {
             resultado.push({
-              letra: original.split(' ')[i],
+              letra: ' ',
+              tipo: 'correta'
+            });
+            i++; j++;
+            continue;
+          }
+          
+          // Compara os caracteres
+          if (caractereOriginal === caractereTranscrito) {
+            // Caractere correto
+            resultado.push({
+              letra: original[i],
               tipo: 'correta'
             });
             i++; j++;
           } else {
-            // Verifica se há similaridade entre as palavras
-            const similaridade = calcularSimilaridade(palavraOriginal, palavraTranscrita);
+            // Verifica se há similaridade entre os caracteres
+            const similaridade = calcularSimilaridade(caractereOriginal, caractereTranscrito);
             if (similaridade >= 0.8) {  // 80% de similaridade
               resultado.push({
-                letra: original.split(' ')[i],
+                letra: original[i],
                 tipo: 'correta'
               });
             } else {
               resultado.push({
-                letra: original.split(' ')[i],
+                letra: original[i],
                 tipo: 'incorreta'
               });
             }
             i++; j++;
           }
-        } else if (i < palavrasOriginais.length) {
+        } else if (i < caracteresOriginais.length) {
+          // Caractere faltante
           resultado.push({
-            letra: original.split(' ')[i],
+            letra: original[i],
             tipo: 'faltante'
           });
           i++;
         } else {
+          // Caractere extra
           resultado.push({
-            letra: transcrita.split(' ')[j],
+            letra: transcrita[j],
             tipo: 'extra'
           });
           j++;
@@ -440,6 +452,38 @@
       if (str1 === str2) return 1;
       if (str1.length === 0 || str2.length === 0) return 0;
       
+      // Mapeamento de caracteres similares
+      const caracteresSimilares = {
+        'a': ['á', 'à', 'ã', 'â', 'ä'],
+        'e': ['é', 'ê', 'ë'],
+        'i': ['í', 'ì', 'î', 'ï'],
+        'o': ['ó', 'ò', 'õ', 'ô', 'ö'],
+        'u': ['ú', 'ù', 'û', 'ü'],
+        'c': ['ç'],
+        's': ['z'],
+        'z': ['s'],
+        'r': ['rr'],
+        'n': ['m'],
+        'm': ['n'],
+        'b': ['p'],
+        'p': ['b'],
+        'd': ['t'],
+        't': ['d'],
+        'f': ['v'],
+        'v': ['f'],
+        'g': ['j'],
+        'j': ['g'],
+        'k': ['c'],
+        'c': ['k'],
+        'l': ['u'],
+        'u': ['l']
+      };
+
+      // Verifica se os caracteres são similares
+      if (caracteresSimilares[str1] && caracteresSimilares[str1].includes(str2)) return 0.9;
+      if (caracteresSimilares[str2] && caracteresSimilares[str2].includes(str1)) return 0.9;
+
+      // Se não forem similares, calcula a distância de Levenshtein
       const len1 = str1.length;
       const len2 = str2.length;
       const matrix = Array(len1 + 1).fill().map(() => Array(len2 + 1).fill(0));
@@ -466,7 +510,11 @@
     function mostrarAnalise(resultado) {
       let html = '<div style="margin-bottom: 10px;">Análise da pronúncia:</div>';
       resultado.forEach(item => {
-        html += `<span class="letra letra-${item.tipo}">${item.letra}</span>`;
+        if (item.letra === ' ') {
+          html += '&nbsp;';
+        } else {
+          html += `<span class="letra letra-${item.tipo}">${item.letra}</span>`;
+        }
       });
       analise.innerHTML = html;
 
