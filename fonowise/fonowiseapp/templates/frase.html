@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Frase - Fonowise</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  {% load static %}
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --primary-light: #4895ef;
+      --secondary-color: #3f37c9;
+      --accent-color: #f72585;
+      --text-color: #2b2d42;
+      --text-light: #8d99ae;
+      --background-color: #f8f9fa;
+      --card-background: #ffffff;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --success-color: #4cc9f0;
+      --border-radius: 12px;
+      --transition-speed: 0.3s;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, var(--background-color) 0%, #e9ecef 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-color);
+    }
+
+    .container {
+      max-width: 800px;
+      width: 90%;
+      margin: 40px auto;
+      padding: 30px;
+      background-color: var(--card-background);
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 30px var(--shadow-color);
+      position: relative;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    h2 {
+      color: var(--text-color);
+      margin-bottom: 15px;
+      font-size: 2em;
+      font-weight: 600;
+    }
+
+    .categoria-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+      color: white;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 500;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.2);
+    }
+
+    .frase-container {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 25px;
+      border-radius: var(--border-radius);
+      margin: 20px 0;
+      border-left: 4px solid var(--primary-color);
+      box-shadow: 0 4px 15px var(--shadow-color);
+    }
+
+    .frase-texto {
+      font-size: 1.4em;
+      color: var(--text-color);
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    .botoes {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 500;
+      transition: all var(--transition-speed) ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px var(--shadow-color);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 10px var(--shadow-color);
+    }
+
+    #btnGravar {
+      background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+      color: white;
+      animation: pulse 2s infinite;
+    }
+
+    #btnParar {
+      background: linear-gradient(45deg, #dc3545, #ff4d6d);
+      color: white;
+    }
+
+    #btnTentarNovamente {
+      background: linear-gradient(45deg, #28a745, #38b000);
+      color: white;
+    }
+
+    #btnOutraFrase {
+      background: linear-gradient(45deg, var(--secondary-color), #560bad);
+      color: white;
+    }
+
+    .btn-voltar {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: var(--text-color);
+      transition: all var(--transition-speed) ease;
+      padding: 10px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: none;
+    }
+
+    .btn-voltar:hover {
+      background-color: var(--background-color);
+      transform: scale(1.1);
+      color: var(--primary-color);
+    }
+
+    .btn-voltar:active {
+      transform: scale(0.95);
+    }
+
+    #transcricao {
+      min-height: 50px;
+      margin: 20px 0;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      background-color: var(--card-background);
+      box-shadow: 0 4px 15px var(--shadow-color);
+      font-size: 1.1em;
+      line-height: 1.6;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .status {
+      color: var(--text-light);
+      font-style: italic;
+      text-align: center;
+      margin-top: 15px;
+      min-height: 24px;
+      font-weight: 500;
+    }
+
+    .contador {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: var(--primary-color);
+      animation: blink 1s infinite;
+    }
+
+    .analise-container {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      box-shadow: 0 4px 15px var(--shadow-color);
+    }
+
+    .letra {
+      display: inline-block;
+      padding: 4px 8px;
+      margin: 0 2px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .letra-correta {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .letra-incorreta {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .letra-faltante {
+      background-color: #ffc107;
+      color: var(--text-color);
+    }
+
+    .letra-extra {
+      background-color: var(--text-light);
+      color: white;
+    }
+
+    .feedback {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      background-color: var(--card-background);
+      box-shadow: 0 4px 15px var(--shadow-color);
+      font-weight: 500;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(67, 97, 238, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+      }
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 95%;
+        padding: 20px;
+        margin: 20px auto;
+      }
+
+      .frase-texto {
+        font-size: 1.2em;
+      }
+
+      .botoes {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .btn-voltar {
+        left: 10px;
+        top: 10px;
+      }
+    }
+
+    .logo {
+      width: 150px;
+      height: auto;
+      margin-bottom: 20px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .logo img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="{% url 'dashboard' %}" class="btn-voltar" title="Voltar ao Dashboard">⬅️</a>
+      <h2>Exercício de Pronúncia</h2>
+      <div class="categoria-badge">{{ categoria }}</div>
+    </div>
+    
+    <div class="frase-container">
+      <p class="frase-texto"><strong>{{ frase }}</strong></p>
+    </div>
+
+    <div class="botoes">
+      <button id="btnGravar" onclick="iniciarGravacao()">🎤 Tentar Pronunciar</button>
+      <button id="btnParar" onclick="pararGravacao()">⏹️ Parar</button>
+    </div>
+
+    <div class="botoes">
+      <button id="btnTentarNovamente" onclick="tentarNovamente()">🔄 Tentar Novamente</button>
+      <button id="btnOutraFrase" onclick="tentarOutraFrase()">📝 Tentar Outra Frase</button>
+    </div>
+
+    <div id="transcricao"></div>
+    <div id="analise" class="analise-container"></div>
+    <div id="feedback" class="feedback"></div>
+    <p id="status" class="status"></p>
+  </div>
+
+  <script>
+    let recognition;
+    const transcricao = document.getElementById('transcricao');
+    const analise = document.getElementById('analise');
+    const feedback = document.getElementById('feedback');
+    const status = document.getElementById('status');
+    const btnGravar = document.getElementById('btnGravar');
+    const btnParar = document.getElementById('btnParar');
+    const btnTentarNovamente = document.getElementById('btnTentarNovamente');
+    const btnOutraFrase = document.getElementById('btnOutraFrase');
+    const fraseOriginal = "{{ frase }}";
+
+    function normalizarNumero(texto) {
+      const numerosPorExtenso = {
+        'zero': '0', 'um': '1', 'dois': '2', 'três': '3', 'quatro': '4', 'cinco': '5',
+        'seis': '6', 'sete': '7', 'oito': '8', 'nove': '9', 'dez': '10',
+        'onze': '11', 'doze': '12', 'treze': '13', 'quatorze': '14', 'quinze': '15',
+        'dezesseis': '16', 'dezessete': '17', 'dezoito': '18', 'dezenove': '19', 'vinte': '20',
+        'vinte e um': '21', 'vinte e dois': '22', 'vinte e três': '23'
+      };
+
+      let textoNormalizado = texto.toLowerCase();
+      
+      // Substitui números por extenso por seus equivalentes numéricos
+      Object.entries(numerosPorExtenso).forEach(([extenso, numero]) => {
+        const regex = new RegExp(extenso, 'gi');
+        textoNormalizado = textoNormalizado.replace(regex, numero);
+      });
+
+      return textoNormalizado;
+    }
+
+    function compararFrases(original, transcrita) {
+      // Remove acentos e converte para minúsculas
+      const originalNormalizado = normalizarNumero(original.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[.,!?]/g, '')  // Remove pontuação
+        .replace(/\s+/g, ' ')    // Normaliza espaços
+        .trim());                 // Remove espaços no início e fim
+      
+      const transcritaNormalizada = normalizarNumero(transcrita.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[.,!?]/g, '')  // Remove pontuação
+        .replace(/\s+/g, ' ')    // Normaliza espaços
+        .trim());                 // Remove espaços no início e fim
+      
+      // Divide as frases em palavras
+      const palavrasOriginais = originalNormalizado.split(' ');
+      const palavrasTranscritas = transcritaNormalizada.split(' ');
+      
+      const resultado = [];
+      let i = 0, j = 0;
+      
+      while (i < palavrasOriginais.length || j < palavrasTranscritas.length) {
+        if (i < palavrasOriginais.length && j < palavrasTranscritas.length) {
+          const palavraOriginal = palavrasOriginais[i];
+          const palavraTranscrita = palavrasTranscritas[j];
+          
+          // Compara as palavras
+          if (palavraOriginal === palavraTranscrita) {
+            // Palavra correta
+            resultado.push({
+              letra: original.split(' ')[i],
+              tipo: 'correta'
+            });
+            i++; j++;
+          } else {
+            // Verifica se há similaridade entre as palavras
+            const similaridade = calcularSimilaridade(palavraOriginal, palavraTranscrita);
+            if (similaridade >= 0.8) {  // 80% de similaridade
+              resultado.push({
+                letra: original.split(' ')[i],
+                tipo: 'correta'
+              });
+            } else {
+              resultado.push({
+                letra: original.split(' ')[i],
+                tipo: 'incorreta'
+              });
+            }
+            i++; j++;
+          }
+        } else if (i < palavrasOriginais.length) {
+          resultado.push({
+            letra: original.split(' ')[i],
+            tipo: 'faltante'
+          });
+          i++;
+        } else {
+          resultado.push({
+            letra: transcrita.split(' ')[j],
+            tipo: 'extra'
+          });
+          j++;
+        }
+      }
+      
+      return resultado;
+    }
+
+    function calcularSimilaridade(str1, str2) {
+      if (str1 === str2) return 1;
+      if (str1.length === 0 || str2.length === 0) return 0;
+      
+      const len1 = str1.length;
+      const len2 = str2.length;
+      const matrix = Array(len1 + 1).fill().map(() => Array(len2 + 1).fill(0));
+      
+      for (let i = 0; i <= len1; i++) matrix[i][0] = i;
+      for (let j = 0; j <= len2; j++) matrix[0][j] = j;
+      
+      for (let i = 1; i <= len1; i++) {
+        for (let j = 1; j <= len2; j++) {
+          const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1,      // deleção
+            matrix[i][j - 1] + 1,      // inserção
+            matrix[i - 1][j - 1] + cost // substituição
+          );
+        }
+      }
+      
+      const distancia = matrix[len1][len2];
+      const maxLen = Math.max(len1, len2);
+      return 1 - (distancia / maxLen);
+    }
+
+    function mostrarAnalise(resultado) {
+      let html = '<div style="margin-bottom: 10px;">Análise da pronúncia:</div>';
+      resultado.forEach(item => {
+        html += `<span class="letra letra-${item.tipo}">${item.letra}</span>`;
+      });
+      analise.innerHTML = html;
+
+      // Adiciona feedback
+      const erros = resultado.filter(item => item.tipo !== 'correta').length;
+      const total = resultado.length;
+      const acertos = total - erros;
+      const percentual = Math.round((acertos / total) * 100);
+
+      let mensagem = '';
+      if (percentual === 100) {
+        mensagem = 'Perfeito! Pronúncia excelente! 🎉';
+        // Para a gravação automaticamente quando atingir 100%
+        pararGravacao();
+      } else if (percentual >= 90) {
+        mensagem = 'Excelente pronúncia! 🌟';
+      } else if (percentual >= 70) {
+        mensagem = 'Boa pronúncia! Continue praticando! 👍';
+      } else if (percentual >= 50) {
+        mensagem = 'Pronúncia regular. Tente novamente! 💪';
+      } else {
+        mensagem = 'Precisa melhorar a pronúncia. Tente novamente! 🎯';
+      }
+
+      feedback.innerHTML = `
+        <div>Pontuação: ${percentual}%</div>
+        <div>${mensagem}</div>
+      `;
+    }
+
+    function iniciarGravacao() {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert('Seu navegador não suporta reconhecimento de voz.');
+        return;
+      }
+
+      // Desabilita o botão de gravar
+      btnGravar.disabled = true;
+      status.textContent = 'Preparando...';
+      status.className = 'status status-preparando';
+
+      // Adiciona um delay de 1.5 segundos antes de iniciar
+      setTimeout(() => {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'pt-BR';
+
+        recognition.onstart = () => {
+          status.innerHTML = '<span class="contador">3</span>';
+          let contagem = 3;
+          
+          const contador = setInterval(() => {
+            contagem--;
+            if (contagem > 0) {
+              status.innerHTML = `<span class="contador">${contagem}</span>`;
+            } else {
+              clearInterval(contador);
+              status.textContent = '🎤 Pode começar a falar!';
+              status.className = 'status';
+            }
+          }, 1000);
+
+          transcricao.textContent = '';
+          analise.innerHTML = '';
+          feedback.innerHTML = '';
+          btnParar.disabled = false;
+        };
+
+        recognition.onresult = (event) => {
+          let texto = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            texto += event.results[i][0].transcript;
+          }
+          transcricao.textContent = texto;
+          
+          if (texto.trim()) {
+            const resultado = compararFrases(fraseOriginal, texto);
+            mostrarAnalise(resultado);
+          }
+        };
+
+        recognition.onerror = (event) => {
+          status.textContent = '❌ Erro: ' + event.error;
+          status.className = 'status';
+          btnGravar.disabled = false;
+          btnParar.disabled = true;
+        };
+
+        recognition.onend = () => {
+          status.textContent = '✅ Reconhecimento encerrado';
+          status.className = 'status';
+          btnGravar.disabled = false;
+          btnParar.disabled = true;
+        };
+
+        recognition.start();
+      }, 1500); // Delay de 1.5 segundos
+    }
+
+    function pararGravacao() {
+      if (recognition) {
+        recognition.stop();
+      }
+    }
+
+    function tentarNovamente() {
+      // Limpa a transcrição e análise
+      transcricao.textContent = '';
+      analise.innerHTML = '';
+      feedback.innerHTML = '';
+      status.textContent = '';
+      
+      // Inicia nova gravação
+      iniciarGravacao();
+    }
+
+    function tentarOutraFrase() {
+      // Redireciona para a mesma categoria para obter uma nova frase
+      window.location.reload();
+    }
+
+    // Inicialização
+    btnParar.disabled = true;
+  </script>
+</body>
+</html>

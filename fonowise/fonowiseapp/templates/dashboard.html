@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard - Fonowise</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  {% load static %}
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --primary-light: #4895ef;
+      --secondary-color: #3f37c9;
+      --accent-color: #f72585;
+      --text-color: #2b2d42;
+      --text-light: #8d99ae;
+      --background-color: #f8f9fa;
+      --card-background: #ffffff;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --success-color: #4cc9f0;
+      --border-radius: 12px;
+      --transition-speed: 0.3s;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, var(--background-color) 0%, #e9ecef 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-color);
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 90%;
+      margin: 40px auto;
+      padding: 30px;
+      background-color: var(--card-background);
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 30px var(--shadow-color);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 3em;
+      font-weight: 700;
+      background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 15px;
+      letter-spacing: -1px;
+    }
+
+    h1 {
+      color: var(--text-color);
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 2.2em;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: var(--text-light);
+      font-size: 1.1em;
+      margin-bottom: 30px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .categorias-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      padding: 20px 0;
+    }
+
+    .categoria-card {
+      background: var(--card-background);
+      border-radius: var(--border-radius);
+      padding: 25px;
+      text-align: center;
+      transition: all var(--transition-speed) ease;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .categoria-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+      opacity: 0;
+      transition: opacity var(--transition-speed) ease;
+      z-index: 0;
+    }
+
+    .categoria-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px var(--shadow-color);
+    }
+
+    .categoria-card:hover::before {
+      opacity: 0.05;
+    }
+
+    .categoria-icon {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .categoria-nome {
+      font-size: 1.2em;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+    }
+
+    .categoria-card:hover .categoria-nome {
+      color: var(--primary-color);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 95%;
+        padding: 20px;
+        margin: 20px auto;
+      }
+
+      .categorias-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .logo {
+        font-size: 2.5em;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1200px) {
+      .categorias-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">🎯 Fonowise</div>
+      <h1>Escolha uma Categoria</h1>
+      <p class="subtitle">Selecione uma categoria para praticar sua pronúncia e melhorar suas habilidades de fala</p>
+    </div>
+
+    <div class="categorias-grid">
+      {% for key, nome in categorias.items %}
+        <a href="{% url 'frase_view' key %}" class="categoria-card">
+          <div class="categoria-icon">
+            {% if key == 'trava_lingua' %}
+              🗣️
+            {% elif key == 'palavras_dificeis' %}
+              📚
+            {% elif key == 'fonemas_especificos' %}
+              🔊
+            {% elif key == 'vogais_ditongos' %}
+              🎵
+            {% elif key == 'saudacoes' %}
+              👋
+            {% elif key == 'expressoes_comuns' %}
+              💬
+            {% elif key == 'comidas' %}
+              🍽️
+            {% elif key == 'cores' %}
+              🎨
+            {% elif key == 'animais' %}
+              🦁
+            {% elif key == 'profissoes' %}
+              👨‍💼
+            {% else %}
+              📝
+            {% endif %}
+          </div>
+          <div class="categoria-nome">{{ nome }}</div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>
