@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-22zlztm0y_kt6+e0@w%-q%7ixkstpc79i^ida(9(5orap$v=nz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -76,12 +76,8 @@ WSGI_APPLICATION = 'fonowise.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fonowise',
-        'USER': 'fonowise_user',
-        'PASSWORD': 'fonowise_2025',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
