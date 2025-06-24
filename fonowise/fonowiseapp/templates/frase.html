@@ -50,6 +50,28 @@
       position: relative;
     }
 
+    .btn-voltar-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+    }
+
+    .btn-voltar {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 1.2em;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.3s;
+    }
+
+    .btn-voltar:hover {
+      color: var(--primary-light);
+    }
+
     .header {
       text-align: center;
       margin-bottom: 30px;
@@ -145,34 +167,6 @@
     #btnOutraFrase {
       background: linear-gradient(45deg, var(--secondary-color), #560bad);
       color: white;
-    }
-
-    .btn-voltar {
-      position: absolute;
-      left: 20px;
-      top: 20px;
-      background: none;
-      border: none;
-      font-size: 1.5em;
-      cursor: pointer;
-      color: var(--text-color);
-      transition: all var(--transition-speed) ease;
-      padding: 10px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: none;
-    }
-
-    .btn-voltar:hover {
-      background-color: var(--background-color);
-      transform: scale(1.1);
-      color: var(--primary-color);
-    }
-
-    .btn-voltar:active {
-      transform: scale(0.95);
     }
 
     #transcricao {
@@ -308,8 +302,11 @@
 </head>
 <body>
   <div class="container">
+    <div class="btn-voltar-container">
+        <a href="{% url 'fonowiseapp:dashboard' %}" class="btn-voltar" title="Voltar">&#x2190; Voltar</a>
+    </div>
+    
     <div class="header">
-      <a href="{% url 'dashboard' %}" class="btn-voltar" title="Voltar ao Dashboard">⬅️</a>
       <h2>Exercício de Pronúncia</h2>
       <div class="categoria-badge">{{ categoria }}</div>
     </div>

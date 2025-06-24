@@ -1,120 +1,84 @@
-import json
-import os
 import random
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from .models import Categoria, ProgressoUsuario
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
-# Categorias e suas frases
-CATEGORIAS = {
-    "trava_lingua": "Trava-Língua",
-    "palavras_dificeis": "Palavras Difíceis",
-    "fonemas_especificos": "Fonemas Específicos",
-    "vogais_ditongos": "Vogais e Ditongos",
-    "saudacoes": "Saudações",
-    "expressoes_comuns": "Expressões Comuns",
-    "comidas": "Comidas",
-    "cores": "Cores",
-    "animais": "Animais",
-    "profissoes": "Profissões"
-}
-
-# Frases por categoria
-FRASES = {
-    "trava_lingua": [
-        "O rato roeu a roupa do rei de Roma",
-        "A aranha arranha a rã",
-        "O doce perguntou ao doce qual é o doce mais doce",
-        "Três pratos de trigo para três tigres tristes",
-        "O tempo perguntou ao tempo quanto tempo o tempo tem"
-    ],
-    "palavras_dificeis": [
-        "Paralelepípedo",
-        "Otorrinolaringologista",
-        "Pneumoultramicroscopicossilicovulcanoconiose",
-        "Inconstitucionalissimamente",
-        "Anticonstitucionalissimamente"
-    ],
-    "fonemas_especificos": [
-        "O cachorro corre no campo",
-        "A xícara está cheia de chá",
-        "O gato mia no telhado",
-        "A zebra corre na savana",
-        "O jacaré nada no rio"
-    ],
-    "vogais_ditongos": [
-        "O céu está azul",
-        "A águia voa alto",
-        "O boi pasta no campo",
-        "A noite cai suave",
-        "O rei governa o país"
-    ],
-    "saudacoes": [
-        "Bom dia, tudo bem?",
-        "Boa tarde, como vai?",
-        "Boa noite, prazer em conhecer",
-        "Olá, tudo bem com você?",
-        "Oi, como você está?"
-    ],
-    "expressoes_comuns": [
-        "Por favor, me ajude",
-        "Muito obrigado pela ajuda",
-        "Desculpe pelo transtorno",
-        "Pode me ajudar com isso?",
-        "Não entendi, pode repetir?"
-    ],
-    "comidas": [
-        "O arroz está quente",
-        "A feijoada é uma comida típica",
-        "O brigadeiro é muito doce",
-        "A pizza está deliciosa",
-        "O churrasco é uma tradição"
-    ],
-    "cores": [
-        "Vermelho, azul, amarelo",
-        "Verde, roxo, laranja",
-        "Rosa, marrom, preto",
-        "Branco, cinza, bege",
-        "Roxo, lilás, turquesa"
-    ],
-    "animais": [
-        "O leão é o rei da selva",
-        "O elefante é um animal grande",
-        "A girafa tem pescoço comprido",
-        "O macaco pula de galho em galho",
-        "O tigre tem listras pretas"
-    ],
-    "profissoes": [
-        "O médico cuida dos doentes",
-        "O professor ensina os alunos",
-        "O engenheiro constrói prédios",
-        "O advogado defende as pessoas",
-        "O chef cozinha com amor"
-    ]
-}
-
-def dashboard(request):
-    return render(request, 'dashboard.html', {"categorias": CATEGORIAS})
-
-def frase_view(request, categoria):
-    # Obtém a lista de frases para a categoria
-    frases = FRASES.get(categoria, [])
-    
-    # Obtém a última frase usada da sessão
-    ultima_frase = request.session.get('ultima_frase', '')
-    
-    # Remove a última frase da lista (se existir e se houver mais de uma frase)
-    if ultima_frase in frases and len(frases) > 1:
-        frases.remove(ultima_frase)
-    
-    # Escolhe uma frase aleatória
-    if frases:
-        frase = random.choice(frases)
-        request.session['ultima_frase'] = frase
+def register_view(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('fonowiseapp:dashboard')
     else:
-        frase = "Nenhuma frase disponível para esta categoria."
-    
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('fonowiseapp:dashboard')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'registration/login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('fonowiseapp:login')
+
+@login_required
+def dashboard(request):
+    categorias = Categoria.objects.all()
+    return render(request, 'dashboard.html', {"categorias": categorias})
+
+@login_required
+def progresso_view(request):
+    progresso_por_categoria = ProgressoUsuario.objects.filter(usuario=request.user).order_by('categoria__nome')
+    return render(request, 'progresso.html', {
+        'progresso_list': progresso_por_categoria
+    })
+
+@login_required
+def frase_view(request, categoria_id):
+    try:
+        categoria = Categoria.objects.get(id=categoria_id)
+
+        # Garante que o progresso para esta categoria existe
+        progresso, created = ProgressoUsuario.objects.get_or_create(
+            usuario=request.user, 
+            categoria=categoria
+        )
+        
+        # Pega as frases que o usuário AINDA NÃO VIU
+        frases_vistas_ids = progresso.frases_vistas.values_list('id', flat=True)
+        frases_nao_vistas = categoria.frases.exclude(id__in=frases_vistas_ids)
+
+        if frases_nao_vistas.exists():
+            # Escolhe uma frase aleatória das não vistas
+            frase = random.choice(list(frases_nao_vistas))
+            frase_texto = frase.texto
+            
+            # Adiciona a nova frase ao progresso
+            progresso.frases_vistas.add(frase)
+            
+        else:
+            # O usuário já viu todas as frases desta categoria
+            frase_texto = "Parabéns! Você concluiu todas as frases desta categoria."
+
+    except Categoria.DoesNotExist:
+        categoria = None
+        frase_texto = "Categoria não encontrada."
+
     return render(request, 'frase.html', {
-        "frase": frase,
+        "frase": frase_texto,
         "categoria": categoria,
-        "nome_categoria": CATEGORIAS.get(categoria, categoria)
+        "nome_categoria": categoria.nome if categoria else "Inválida"
     })

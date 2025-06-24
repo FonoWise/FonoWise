@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Meu Progresso - Fonowise</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --primary-light: #4895ef;
+      --text-color: #2b2d42;
+      --text-light: #8d99ae;
+      --background-color: #f8f9fa;
+      --card-background: #ffffff;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --border-radius: 12px;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--background-color) 0%, #e9ecef 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 30px;
+      background-color: var(--card-background);
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 30px var(--shadow-color);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    .btn-voltar {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 1.2em;
+      font-weight: 500;
+    }
+    h1 {
+      color: var(--text-color);
+      font-weight: 600;
+    }
+    .progresso-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .progresso-card {
+      background: #fdfdff;
+      border: 1px solid #eef;
+      border-radius: var(--border-radius);
+      padding: 20px;
+    }
+    .progresso-card h3 {
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+    .progresso-info {
+      font-size: 0.95em;
+      color: var(--text-light);
+      margin-bottom: 15px;
+    }
+    .progress-bar-container {
+      width: 100%;
+      background-color: #e9ecef;
+      border-radius: 20px;
+      height: 15px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-light), var(--primary-color));
+      border-radius: 20px;
+      text-align: center;
+      color: white;
+      font-size: 0.8em;
+      line-height: 15px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 50px;
+      color: var(--text-light);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="{% url 'fonowiseapp:dashboard' %}" class="btn-voltar">&#x2190; Voltar</a>
+      <h1>Meu Progresso</h1>
+    </div>
+
+    {% if progresso_list %}
+      <div class="progresso-grid">
+        {% for prog in progresso_list %}
+          <div class="progresso-card">
+            <h3>{{ prog.categoria.nome }}</h3>
+            <p class="progresso-info">
+              {{ prog.frases_concluidas }} de {{ prog.total_frases }} frases vistas
+            </p>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: {{ prog.porcentagem }}%;">
+                {{ prog.porcentagem }}%
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>Você ainda não praticou nenhuma categoria.</p>
+        <p>Volte ao dashboard e comece a praticar para ver seu progresso aqui!</p>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html> 

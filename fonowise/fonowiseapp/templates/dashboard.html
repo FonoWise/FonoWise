@@ -52,7 +52,49 @@
     .header {
       text-align: center;
       margin-bottom: 40px;
+      padding-top: 50px; /* Space for user header */
       position: relative;
+    }
+
+    .user-header {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-header span {
+      font-weight: 500;
+    }
+
+    .btn-progress {
+      background-color: var(--primary-light);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.9em;
+      transition: background-color var(--transition-speed);
+    }
+
+    .btn-progress:hover {
+      background-color: var(--primary-color);
+    }
+
+    .btn-logout {
+      background-color: var(--accent-color);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.9em;
+      transition: background-color var(--transition-speed);
+    }
+
+    .btn-logout:hover {
+      background-color: #d90429;
     }
 
     .logo {
@@ -175,43 +217,52 @@
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">🎯 Fonowise</div>
+      <div class="user-header">
+        <span>Olá, {{ user.username }}!</span>
+        <a href="{% url 'fonowiseapp:progresso' %}" class="btn-progress">Meu Progresso</a>
+        <a href="{% url 'fonowiseapp:logout' %}" class="btn-logout">Sair</a>
+      </div>
+      <div class="logo">Fonowise</div>
       <h1>Escolha uma Categoria</h1>
       <p class="subtitle">Selecione uma categoria para praticar sua pronúncia e melhorar suas habilidades de fala</p>
     </div>
 
     <div class="categorias-grid">
-      {% for key, nome in categorias.items %}
-        <a href="{% url 'frase_view' key %}" class="categoria-card">
+      {% for categoria in categorias %}
+        <a href="{% url 'fonowiseapp:frase_view' categoria.id %}" class="categoria-card">
           <div class="categoria-icon">
-            {% if key == 'trava_lingua' %}
+            {% if categoria.nome == 'Trava-Língua' %}
               🗣️
-            {% elif key == 'palavras_dificeis' %}
+            {% elif categoria.nome == 'Palavras Difíceis' %}
               📚
-            {% elif key == 'fonemas_especificos' %}
+            {% elif categoria.nome == 'Fonemas Específicos' %}
               🔊
-            {% elif key == 'vogais_ditongos' %}
+            {% elif categoria.nome == 'Vogais e Ditongos' %}
               🎵
-            {% elif key == 'saudacoes' %}
+            {% elif categoria.nome == 'Saudações' %}
               👋
-            {% elif key == 'expressoes_comuns' %}
+            {% elif categoria.nome == 'Expressões Comuns' %}
               💬
-            {% elif key == 'comidas' %}
+            {% elif categoria.nome == 'Comidas' %}
               🍽️
-            {% elif key == 'cores' %}
+            {% elif categoria.nome == 'Cores' %}
               🎨
-            {% elif key == 'animais' %}
-              🦁
-            {% elif key == 'profissoes' %}
-              👨‍💼
+            {% elif categoria.nome == 'Animais' %}
+              🐾
+            {% elif categoria.nome == 'Profissões' %}
+              💼
             {% else %}
               📝
             {% endif %}
           </div>
-          <div class="categoria-nome">{{ nome }}</div>
+          <div class="categoria-nome">{{ categoria.nome }}</div>
         </a>
       {% endfor %}
     </div>
   </div>
+
+  <footer>
+    <!-- Adicione o restante do conteúdo do rodapé -->
+  </footer>
 </body>
 </html>
